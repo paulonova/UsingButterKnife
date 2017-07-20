@@ -5,21 +5,20 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Layout;
 import android.text.method.ScrollingMovementMethod;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.TextView;
 
+import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = "MainActivity";
+    public static final String LOG_TEXT_KEY = "log_text_key";
     private TextView mLog;
 
-//    @BindView(R.id.run_button) Button runButton;
-    @OnClick(R.id.run_button)
-    public void onRunButtonClick(){
-        logMessage("runCode");
-    }
+    @BindView(R.id.run_button)    Button runButton;
 
     /**
      * butterKnife OnClickEvent annotation */
@@ -36,12 +35,7 @@ public class MainActivity extends AppCompatActivity {
 
         ButterKnife.bind(this);
 
-//        runButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                runCode();
-//            }
-//        });
+        runButton.setOnClickListener(v -> runCode());  //Lambda
 
 
 //        findViewById(R.id.clear_button)
@@ -54,9 +48,22 @@ public class MainActivity extends AppCompatActivity {
 
         mLog = (TextView) findViewById(R.id.log);
         mLog.setMovementMethod(new ScrollingMovementMethod());
-        mLog.setText("");
+
+        //ConfigChanges
+        if(savedInstanceState != null && savedInstanceState.containsKey(LOG_TEXT_KEY)){
+            mLog.setText(savedInstanceState.getString(LOG_TEXT_KEY));
+        }else{
+            mLog.setText("");
+        }
 
         logMessage("onCreate");
+    }
+
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        String logText = mLog.getText().toString();
+        outState.putString(LOG_TEXT_KEY, logText);
+        super.onSaveInstanceState(outState);
     }
 
     @Override
@@ -98,9 +105,9 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-//    public void runCode() {
-//        logMessage("runCode");
-//    }
+    public void runCode() {
+        logMessage("runCode");
+    }
 
 //    public void clearLog() {
 //        mLog.setText("");
